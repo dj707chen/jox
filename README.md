@@ -212,6 +212,50 @@ class Demo6 {
 
 ## Performance
 
+### How to run
+
+    # At the Repository root
+    mvn clean package
+    java -jar bench/bench-java/target/benchmarks.jar
+
+Why can I run it this way?
+
+bench-java/pom.xml has parent
+
+        <parent>
+            <groupId>com.softwaremill.jox</groupId>
+            <artifactId>bench</artifactId>
+            <version>0.1.1</version>
+        </parent>
+
+And bench/pom.xml has
+
+    <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
+        <executions>
+            <execution>
+                <phase>package</phase>
+                <goals><goal>shade</goal></goals>
+                <configuration>
+                    <finalName>${uberjar.name}</finalName>
+                    <transformers>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                            <mainClass>org.openjdk.jmh.Main</mainClass>
+                        </transformer>
+                        <transformer
+                                implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                    </transformers>
+                    ......
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                </configuration>
+            </execution>
+        </executions>
+    </plugin>
+
+### Results
 The project includes benchmarks implemented using JMH - both for the `Channel`, as well as for some built-in Java
 synchronisation primitives (queues), as well as the Kotlin channel implementation.
 
